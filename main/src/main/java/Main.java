@@ -12,11 +12,21 @@ import utils.Validators;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
+    private static void displayAnimalList(AnimalTable animalTable) throws SQLException, AnimalNotSupported {
+        List<Animal> animalList = animalTable.selectAll();
+        if (animalList.isEmpty()) {
+            System.out.println("Список животных пуст");
+        } else {
+            animalList.forEach(animal -> System.out.println(animal.toString()));
+        }
+    }
     public static void main(String[] args) throws AnimalNotSupported, SQLException {
         AnimalTable animalTable = new AnimalTable();
+
         Scanner scanner = new Scanner(System.in);
         CommandData[] commandsData = CommandData.values();
         String[] commandsConsole = new String[CommandData.values().length];
@@ -29,6 +39,7 @@ public class Main {
             animalCommandsDataConsole[j] = AnimalData.values()[j].name().toLowerCase();
         }
         ArrayList<Animal> animalList = new ArrayList<>();
+
 
         while (true) {
             System.out.printf("Введите одну из команд: %s%n", String.join("/", commandsConsole));
@@ -105,14 +116,10 @@ public class Main {
                     }
                     break;
                 case LIST:
-                    animalList = animalTable.selectAll();
-                    if (animalList.isEmpty()) {
-                        System.out.println("Список животных пуст");
-                    } else {
-                        animalList.forEach((Animal animal) -> System.out.println(animal.toString()));
-                    }
+                    displayAnimalList(animalTable);
                     break;
                 case DELETE:
+                    displayAnimalList(animalTable);
                     System.out.println("Введите ID животного, которое нужно удалить");
                     String deleteAnimal = scanner.nextLine().trim();
                     int delete = Integer.parseInt(deleteAnimal);
@@ -120,30 +127,33 @@ public class Main {
                     System.out.println("Животное успешно удалено");
                     break;
                 case UPDATE:
+                    displayAnimalList(animalTable);
+
                     System.out.println("Введите идентификатор животного для обновления");
                     int idToUpdate = Integer.parseInt(scanner.nextLine().trim());
 
                     Animal animalToUpdate = animalTable.selectById(idToUpdate);
                     if (animalToUpdate != null) {
-                        System.out.println("Введите новое имя");
-                        String newName = scanner.nextLine().trim();
+                        String newName = Validators.validateStringInput(scanner, "Пожалуйста, введите новое имя животного",
+                                "Неверный формат ввода. Пожалуйста, введите строку");
 
-                        System.out.print("Введите новый возраст");
-                        int newAge = Integer.parseInt(scanner.nextLine().trim());
+                        String newAge = String.valueOf(Validators.validateIntegerInput(scanner, "Введите возраст животного",
+                                "Неверный формат возраста. Введите положительное целое число."));
 
-                        System.out.print("Введите новый вес");
-                        float newWeight = Float.parseFloat(scanner.nextLine().trim());
+                        String newWeight = String.valueOf(Validators.validateFloatInput(scanner, "Введите вес животного",
+                                "Неверный формат веса"));
 
-                        System.out.print("Введите новый цвет");
-                        String newColor = scanner.nextLine().trim();
+                        String newColor = Validators.validateStringInput(scanner, "Пожалуйста, введите новый цвет животного",
+                                "Неверный формат ввода. Пожалуйста, введите строку");
 
                         animalToUpdate.setName(newName);
-                        animalToUpdate.setAge(newAge);
-                        animalToUpdate.setWeight(newWeight);
+                        animalToUpdate.setAge(Integer.parseInt(newAge));
+                        animalToUpdate.setWeight(Float.parseFloat(newWeight));
                         animalToUpdate.setColor(newColor);
 
                         animalTable.update(animalToUpdate);
                     }
+                    break;
                 case EXIT:
                     System.exit(0);
             }

@@ -19,7 +19,7 @@ public class AnimalTable extends AbsTable {
     public AnimalTable() throws SQLException {
         super("animals");
         columns = new HashMap<>();
-
+        columns.put("id", "int(254)");
         columns.put("type", "varchar(15)");
         columns.put("name", "varchar(15)");
         columns.put("age", "int");

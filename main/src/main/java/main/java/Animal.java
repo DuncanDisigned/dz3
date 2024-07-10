@@ -77,8 +77,8 @@ public abstract class Animal {
 
     @Override
     public String toString() {
-        return String.format("Привет! меня зовут %s, мне %d %s, я вешу - %.2f кг, мой цвет - %s",
-                name, age, getCase(), weight, color);
+        return String.format("ID: %d, Привет! Меня зовут %s, мне %d %s, я вешу - %.2f кг, мой цвет - %s",
+                id, name, age, getCase(), weight, color);
     }
 
     private String getCase() {
